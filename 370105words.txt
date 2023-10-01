@@ -151881,7 +151881,6 @@ infectors
 infectress
 infects
 infectum
-infectuous
 infecund
 infecundity
 infeeble
