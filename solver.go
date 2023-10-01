@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-// 8 anieyeaaag#onzgrehiauif!odl
-
 func Solve(board *[25]Letter, wildcards int, words *WordsGraph) *WordHeap {
 	hp := &WordHeap{}
 
