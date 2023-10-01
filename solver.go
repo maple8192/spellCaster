@@ -2,26 +2,12 @@ package main
 
 import (
 	"container/heap"
-	"fmt"
 )
 
 func Solve(board *[25]Letter, wildcards int, words *WordsGraph) *WordHeap {
 	hp := &WordHeap{}
 
 	Foreach(25, wildcards, func(indices *[]int) {
-		if len(*indices) != 0 {
-			f := true
-			for i := 0; i < len(*indices)-1; i++ {
-				if (*indices)[i] != (*indices)[i+1]-1 {
-					f = false
-					break
-				}
-			}
-			if f {
-				fmt.Printf("[ %d / %d ] ...\n", (*indices)[0], 25-len(*indices))
-			}
-		}
-
 		for i := 0; i < 25; i++ {
 			for j := 0; j < len(words.initials); j++ {
 				exist := false

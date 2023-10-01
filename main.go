@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const ResultNum = 100
+const ResultNum = 30
 
 func main() {
 	graph, err := CreateWordsGraph()
