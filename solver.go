@@ -2,17 +2,45 @@ package main
 
 import (
 	"container/heap"
+	"fmt"
 )
+
+// 8 anieyeaaag#onzgrehiauif!odl
 
 func Solve(board *[25]Letter, wildcards int, words *WordsGraph) *WordHeap {
 	hp := &WordHeap{}
 
 	Foreach(25, wildcards, func(indices *[]int) {
+		if len(*indices) != 0 {
+			f := true
+			for i := 0; i < len(*indices)-1; i++ {
+				if (*indices)[i] != (*indices)[i+1]-1 {
+					f = false
+					break
+				}
+			}
+			if f {
+				fmt.Printf("[ %d / %d ] ...\n", (*indices)[0], 25-len(*indices))
+			}
+		}
+
 		for i := 0; i < 25; i++ {
 			for j := 0; j < len(words.initials); j++ {
-				if words.initials[j].letter == board[i].letter {
-					search(board, words.initials[j], indices, &IntStack{i}, hp)
-					break
+				exist := false
+				for k := 0; k < len(*indices); k++ {
+					if (*indices)[k] == i {
+						exist = true
+						break
+					}
+				}
+
+				if exist {
+					search(board, words.initials[j], indices, &IntStack{i}, &LetterStack{&Letter{words.initials[j].letter, board[i].lm, board[i].wm}}, hp)
+				} else {
+					if words.initials[j].letter == board[i].letter {
+						search(board, words.initials[j], indices, &IntStack{i}, &LetterStack{&board[i]}, hp)
+						break
+					}
 				}
 			}
 		}
@@ -21,16 +49,16 @@ func Solve(board *[25]Letter, wildcards int, words *WordsGraph) *WordHeap {
 	return hp
 }
 
-func search(board *[25]Letter, node *Node, wildcards *[]int, path *IntStack, hp *WordHeap) {
+func search(board *[25]Letter, node *Node, wildcards *[]int, path *IntStack, letters *LetterStack, hp *WordHeap) {
 	for i := 0; i < len(node.next); i++ {
 		if node.next[i].letter == ' ' {
 			runes := make([]rune, 0)
 			points := 0
 			multiply := 1
-			for j := 0; j < len(*path); j++ {
-				runes = append(runes, board[(*path)[j]].letter)
-				points += GetPoint(board[(*path)[j]].letter) * board[(*path)[j]].lm
-				multiply *= board[(*path)[j]].wm
+			for j := 0; j < len(*letters); j++ {
+				runes = append(runes, (*letters)[j].letter)
+				points += GetPoint((*letters)[j].letter) * (*letters)[j].lm
+				multiply *= (*letters)[j].wm
 			}
 			long := 0
 			if len(runes) >= 6 {
@@ -63,15 +91,19 @@ func search(board *[25]Letter, node *Node, wildcards *[]int, path *IntStack, hp 
 			}
 
 			if exist {
-				if node.next[j].letter == ' ' {
+				if node.next[j].letter != ' ' {
 					path.Push(next[i])
-					search(board, node.next[j], wildcards, path, hp)
+					letters.Push(&Letter{node.next[j].letter, board[next[i]].lm, board[next[i]].wm})
+					search(board, node.next[j], wildcards, path, letters, hp)
+					letters.Pop()
 					path.Pop()
 				}
 			} else {
 				if node.next[j].letter == board[next[i]].letter {
 					path.Push(next[i])
-					search(board, node.next[j], wildcards, path, hp)
+					letters.Push(&board[next[i]])
+					search(board, node.next[j], wildcards, path, letters, hp)
+					letters.Pop()
 					path.Pop()
 					break
 				}

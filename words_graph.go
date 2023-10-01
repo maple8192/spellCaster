@@ -17,14 +17,20 @@ type Node struct {
 func CreateWordsGraph() (*WordsGraph, error) {
 	root := &WordsGraph{}
 
-	fp, err := os.Open("words_alpha.txt")
+	fp, err := os.Open("370105words.txt")
 	if err != nil {
 		return nil, err
 	}
 
 	scanner := bufio.NewScanner(fp)
 	for scanner.Scan() {
-		insertWord(root, []rune(scanner.Text()))
+		word := []rune(scanner.Text())
+		for i := 0; i < len(word); i++ {
+			if 'a' <= word[i] && word[i] <= 'z' {
+				word[i] -= 'a' - 'A'
+			}
+		}
+		insertWord(root, word)
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, err
@@ -44,14 +50,14 @@ func insertWord(root *WordsGraph, word []rune) {
 
 	var node *Node = nil
 	for i := 0; i < len(root.initials); i++ {
-		if root.initials[i].letter == word[0]-('a'-'A') {
+		if root.initials[i].letter == word[0] {
 			node = root.initials[i]
 			break
 		}
 	}
 
 	if node == nil {
-		node = &Node{word[0] - ('a' - 'A'), make([]*Node, 0)}
+		node = &Node{word[0], make([]*Node, 0)}
 		root.initials = append(root.initials, node)
 	}
 
@@ -66,14 +72,14 @@ func recInsert(node *Node, word []rune, p int) {
 
 	var next *Node = nil
 	for i := 0; i < len(node.next); i++ {
-		if node.next[i].letter == word[p]-('a'-'A') {
+		if node.next[i].letter == word[p] {
 			next = node.next[i]
 			break
 		}
 	}
 
 	if next == nil {
-		next = &Node{word[p] - ('a' - 'A'), make([]*Node, 0)}
+		next = &Node{word[p], make([]*Node, 0)}
 		node.next = append(node.next, next)
 	}
 

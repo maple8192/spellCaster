@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+const ResultNum = 100
+
 func main() {
 	graph, err := CreateWordsGraph()
 	if err != nil {
@@ -26,7 +28,7 @@ func main() {
 		} else {
 			p := heap.Pop(h).(Word)
 			exist := false
-			for j := 1; j <= gem/3+1 && j <= len(result); j++ {
+			for j := 1; j <= len(result); j++ {
 				if p.word == result[len(result)-j].word {
 					exist = true
 					break
@@ -35,11 +37,15 @@ func main() {
 
 			if !exist {
 				result = append(result, p)
+
+				if len(result) >= ResultNum {
+					break
+				}
 			}
 		}
 	}
 
-	for i := 0; i < 20 && i < len(result); i++ {
+	for i := 0; i < len(result); i++ {
 		fmt.Printf("%d: \"%s\", %dpoints\n", i+1, result[i].word, result[i].point)
 	}
 }
